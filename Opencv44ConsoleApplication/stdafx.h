@@ -1,0 +1,29 @@
+// stdafx.h : 标准系统包含文件的包含文件，
+// 或是经常使用但不常更改的
+// 特定于项目的包含文件
+//
+
+#pragma once
+
+#include "targetver.h"
+#include<opencv2/opencv.hpp>
+#include <fstream>
+#include <stdio.h>
+#include <tchar.h>
+#include<iostream>
+
+using namespace std;
+using namespace cv;
+
+#include"evaluate.h";
+#include"inside_dust_detect.h"
+#include "image_subtract.h"
+#include"subtract_center_area.h"
+#include"little_dust_detect.h"
+#include"fat_light_detect.h"
+
+
+extern int OK_nums;
+extern int NG_nums;
+
+// TODO:  在此处引用程序需要的其他头文件
