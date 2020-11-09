@@ -23,7 +23,7 @@ int fat_light_detect::fat_detect(Mat img)
 
 	Mat threshold_img;
 	//„–÷µ∑÷∏Ó
-	threshold(gray_img, threshold_img, 210, 255,  THRESH_BINARY);
+	threshold(gray_img, threshold_img, 210, 255,  THRESH_TRIANGLE|THRESH_BINARY);
 	Mat edge;
 	Canny(threshold_img,edge, 80, 240, 3, false);
 	//»•‘Î…˘

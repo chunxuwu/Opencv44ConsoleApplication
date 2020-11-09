@@ -4,6 +4,7 @@ class inside_dust_detect
 public:
 	inside_dust_detect();
 	~inside_dust_detect();
-	void my_inside_dust_detect(Mat source_img);
+	int my_inside_dust_detect(Mat source_img);
+	int DZ_detect(Mat img, Vec2d pt);
 };
 
