@@ -21,6 +21,8 @@ using namespace cv;
 #include"subtract_center_area.h"
 #include"little_dust_detect.h"
 #include"fat_light_detect.h"
+#include "flare_detecte.h"
+#include"flare_detecte_V3.h"
 
 
 extern int OK_nums;

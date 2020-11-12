@@ -148,6 +148,8 @@
   <ItemGroup>
     <ClInclude Include="evaluate.h" />
     <ClInclude Include="fat_light_detect.h" />
+    <ClInclude Include="flare_detecte.h" />
+    <ClInclude Include="flare_detecte_V3.h" />
     <ClInclude Include="image_subtract.h" />
     <ClInclude Include="inside_dust_detect.h" />
     <ClInclude Include="little_dust_detect.h" />
@@ -158,6 +160,8 @@
   <ItemGroup>
     <ClCompile Include="evaluate.cpp" />
     <ClCompile Include="fat_light_detect.cpp" />
+    <ClCompile Include="flare_detecte.cpp" />
+    <ClCompile Include="flare_detecte_V3.cpp" />
     <ClCompile Include="image_subtract.cpp" />
     <ClCompile Include="inside_dust_detect.cpp" />
     <ClCompile Include="little_dust_detect.cpp" />

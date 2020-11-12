@@ -42,6 +42,12 @@
     <ClInclude Include="fat_light_detect.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="flare_detecte.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="flare_detecte_V3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -66,6 +72,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="fat_light_detect.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="flare_detecte.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="flare_detecte_V3.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

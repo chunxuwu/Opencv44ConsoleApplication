@@ -23,7 +23,7 @@ int fat_light_detect::fat_detect(Mat img)
 
 	Mat threshold_img;
 	//阈值分割
-	threshold(gray_img, threshold_img, 210, 255,  THRESH_TRIANGLE|THRESH_BINARY);
+	threshold(gray_img, threshold_img, 210, 255, THRESH_BINARY);
 	Mat edge;
 	Canny(threshold_img,edge, 80, 240, 3, false);
 	//去噪声
@@ -42,7 +42,7 @@ int fat_light_detect::fat_detect(Mat img)
 			RotatedRect rrt = fitEllipse(contours[t]);
 			float w = rrt.size.width;
 			float h = rrt.size.height;
-			if (h > 120) return 1;
+			if (w > 120) return 1;
 			cout << "外接轮廓的宽:" << w << endl;
 			cout << "外接轮廓的高:" << h << endl;
 			Point centers = rrt.center;
