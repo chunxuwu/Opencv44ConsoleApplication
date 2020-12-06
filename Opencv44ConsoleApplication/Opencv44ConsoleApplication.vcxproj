@@ -68,6 +68,7 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="opencv_release64.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -147,9 +148,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="evaluate.h" />
+    <ClInclude Include="fatf.h" />
     <ClInclude Include="fat_light_detect.h" />
     <ClInclude Include="flare_detecte.h" />
     <ClInclude Include="flare_detecte_V3.h" />
+    <ClInclude Include="flare_detect_V4.h" />
+    <ClInclude Include="fv_SParam.h" />
     <ClInclude Include="image_subtract.h" />
     <ClInclude Include="inside_dust_detect.h" />
     <ClInclude Include="little_dust_detect.h" />
@@ -159,9 +163,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="evaluate.cpp" />
+    <ClCompile Include="fatf.cpp" />
     <ClCompile Include="fat_light_detect.cpp" />
     <ClCompile Include="flare_detecte.cpp" />
     <ClCompile Include="flare_detecte_V3.cpp" />
+    <ClCompile Include="flare_detect_V4.cpp" />
     <ClCompile Include="image_subtract.cpp" />
     <ClCompile Include="inside_dust_detect.cpp" />
     <ClCompile Include="little_dust_detect.cpp" />

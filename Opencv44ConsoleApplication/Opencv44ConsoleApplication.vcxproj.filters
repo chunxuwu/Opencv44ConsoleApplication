@@ -48,6 +48,15 @@
     <ClInclude Include="flare_detecte_V3.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="flare_detect_V4.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fatf.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="fv_SParam.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -78,6 +87,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="flare_detecte_V3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="flare_detect_V4.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="fatf.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

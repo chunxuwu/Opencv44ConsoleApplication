@@ -1,31 +1,31 @@
 #include "stdafx.h"
-#include "flare_detecte_V3.h"
+#include "flare_detect_V4.h"
 
 
-flare_detecte_V3::flare_detecte_V3()
+flare_detect_V4::flare_detect_V4()
 {
 }
 
 
-flare_detecte_V3::~flare_detecte_V3()
+flare_detect_V4::~flare_detect_V4()
 {
 }
 
-int flare_detecte_V3::my_flare_detecte_V3(Mat image, int edgeDZ_distance, int long_DZ_length,int shortDZ_nums, int fat_radius, int inside_dust)
+int flare_detect_V4::my_flare_detecte_V4(Mat image, int edgeDZ_distance, int long_DZ_length, int shortDZ_num, int fat_radius, int inside_dust)
 {
 	//判断参数
 	int edge_DZ = edgeDZ_distance;//600
 	int long_DZ = long_DZ_length;//450
 	int fat_judge = fat_radius;//400
 	int dust_area = inside_dust;//1000
-	int shortDZ = shortDZ_nums;//3
+	int shortDZ = shortDZ_num;//3
 
 	Mat size_img;
 	resize(image, size_img, Size(), 0.5, 0.5);
 	Mat hsv_img, gray;
 	cvtColor(size_img, hsv_img, COLOR_BGR2HSV);
 
-	//cvtColor(img, gray, COLOR_BGR2GRAY);
+	//cvtColor(size_img, gray, COLOR_BGR2GRAY);
 	//hsv通道分离
 	vector<Mat> hsv_channels;
 	split(hsv_img, hsv_channels);
@@ -34,15 +34,16 @@ int flare_detecte_V3::my_flare_detecte_V3(Mat image, int edgeDZ_distance, int lo
 	image_Vchannel = hsv_channels.at(2);
 	//中值滤波
 	Mat median_image;
-	medianBlur(image_Vchannel, median_image, 115);
+	medianBlur(image_Vchannel, median_image, 95);
 	//均值图像
 	Mat mean_image;
 	//blur(median_image, mean_image, Size(115, 115), Point(-1, -1), 4);
-	GaussianBlur(median_image, mean_image, Size(125, 125), 45,45, 4);
+	GaussianBlur(median_image, mean_image, Size(105,105), 5,5, 4);
+	//bilateralFilter(image_Vchannel, mean_image, 0, 100, 10, 4);
 	//阈值图像
 	Mat dyn_image;
-	adaptiveThreshold(mean_image, dyn_image, 255, 0, THRESH_BINARY, 135, 0);
-	Mat se1 = getStructuringElement(MORPH_RECT, Size(31, 31), Point(-1, -1));
+	adaptiveThreshold(mean_image, dyn_image, 255, 0, THRESH_BINARY, 53, 0);
+	Mat se1 = getStructuringElement(MORPH_RECT, Size(11, 11), Point(-1, -1));
 	//Mat se2 = getStructuringElement(MORPH_RECT, Size(5, 10), Point(-1, -1));
 	Mat result;
 	morphologyEx(dyn_image, result, MORPH_OPEN, se1);
@@ -75,13 +76,13 @@ int flare_detecte_V3::my_flare_detecte_V3(Mat image, int edgeDZ_distance, int lo
 			//circle(src, centers, radius1, Scalar(0, 0, 0), -1, LINE_8, 0);
 		}
 	}
-	int flag = DZ_detect3(result, centers, long_DZ, edge_DZ, shortDZ_nums,dust_area);
+	int flag = DZ_detect4(result, centers, long_DZ, edge_DZ, shortDZ_num, dust_area);
 
 
 	return flag;
 }
 
-int flare_detecte_V3::DZ_detect3(Mat img, Point pt, int long_DZ, int edge_DZ,int shortDZ,int dust_area)
+int flare_detect_V4::DZ_detect4(Mat img, Point pt, int long_DZ, int edge_DZ, int shortDZ_nums, int dust_area)
 {
 	Mat threshold_img;
 	threshold(img, threshold_img, 160, 255, THRESH_BINARY);
@@ -138,12 +139,12 @@ int flare_detecte_V3::DZ_detect3(Mat img, Point pt, int long_DZ, int edge_DZ,int
 			{
 				//是否为边缘道子。计算道子中心与圆心的距离
 				double distance = sqrt(pow((pt.y - center.y), 2) + pow((pt.x - center.x), 2));
-				if (distance > long_DZ) return 5;
+				if (distance > edge_DZ) return 5;
 				//是否为长道子
 				if (max(height, weight) > long_DZ) return 3;
 				//是否为多道子
 				nums_DZ++;
-				if (nums_DZ > shortDZ) return 4;
+				if (nums_DZ > shortDZ_nums) return 4;
 
 				//Point2f pts[4];
 				//rrt.points(pts);
@@ -153,7 +154,7 @@ int flare_detecte_V3::DZ_detect3(Mat img, Point pt, int long_DZ, int edge_DZ,int
 				//}
 				////内尘面积判断}
 			}
-			else 
+			else
 			{
 				area += areai;
 				//cout << "内尘面积" << area<<endl;

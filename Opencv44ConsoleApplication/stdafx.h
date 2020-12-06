@@ -11,19 +11,22 @@
 #include <stdio.h>
 #include <tchar.h>
 #include<iostream>
+#include<fstream>
 
 using namespace std;
 using namespace cv;
 
 #include"evaluate.h";
-#include"inside_dust_detect.h"
-#include "image_subtract.h"
-#include"subtract_center_area.h"
-#include"little_dust_detect.h"
-#include"fat_light_detect.h"
-#include "flare_detecte.h"
-#include"flare_detecte_V3.h"
-
+//#include"inside_dust_detect.h"
+//#include "image_subtract.h"
+//#include"subtract_center_area.h"
+//#include"little_dust_detect.h"
+//#include"fat_light_detect.h"
+//#include "flare_detecte.h"
+//#include"flare_detecte_V3.h"
+#include"flare_detect_V4.h"
+#include "fv_SParam.h"
+#include "fatf.h"
 
 extern int OK_nums;
 extern int NG_nums;

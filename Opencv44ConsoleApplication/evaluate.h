@@ -2,8 +2,6 @@
 class evaluate
 {
 public:
-	evaluate();
-	~evaluate();
-	void my_evaluate(String txt_path);
+	void my_evaluate(String txt_path,String outname);
 };
 
