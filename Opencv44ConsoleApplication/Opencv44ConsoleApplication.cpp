@@ -6,6 +6,10 @@
 //0——》OK
 //1——》放胖
 
+//整合测试，整合镜头的文件夹，index为测试几颗
+void package_test(string filepath,int index_begin,int index_end);
+//单颗镜头测试
+void single_test(string filepath);
 
 int main()
 {
@@ -15,7 +19,8 @@ int main()
 	//C:\Users\czwucx\Desktop\single_light\杂光图片\7.18\发胖
 	//E:\\杂光图片\\2020430NG\\37/16.bmp;;;C:\\Users\\czwucx\\Desktop\\single_light\\杂光图片\\2020427\\OK\\20
 	//Mat img_ng = imread("C:\\Users\\czwucx\\Desktop\\single_light\\mn_pic\\16.bmp");
-	Mat ho_Image = imread("C:\\Users\\czwucx\\Desktop\\single_light\\mn_pic\\10.bmp");
+	Mat ho_Image = imread("C:\\Users\\czwucx\\Desktop\\single_light\\mn_pic\\19.bmp");
+	//Mat ho_Image = imread("C:\\Users\\czwucx\\Desktop\\single_light\\杂光图片\\自动机台过检采图1203\\1-15/2.bmp");
 	if (ho_Image.empty() == true)
 	{
 		cout << "erro: no image was selected" << endl;
@@ -35,7 +40,7 @@ int main()
 	ho_Image_AllV = hsv_channels.at(2);
 	//中值滤波
 	Mat ho_Image_Median;
-	medianBlur(ho_Image_AllV, ho_Image_Median, 2*(param.hv_AbnormalMedianT)+1);
+	medianBlur(ho_Image_AllV, ho_Image_Median, param.hv_AbnormalMedianT);
 
 	//批量测试
 	//string path = "C:\\Users\\czwucx\\Desktop\\single_light\\杂光图片\\2020427\\OK\\filename3.txt";
@@ -43,8 +48,16 @@ int main()
 	string path = "C:\\Users\\czwucx\\Desktop\\single_light\\杂光图片\\7.9_ok\\filename3.txt";
 	//string path = "C:\\Users\\czwucx\\Desktop\\single_light\\杂光图片\\2020427\\OK\\filename3.txt";
 	evaluate my_evaluate;
-	String output_name = "fat_test_7.9ok.txt";
+	//string output_name = "fat_test_7.9ok.txt";
 	//my_evaluate.my_evaluate(path, output_name);
+
+	string files_path = "E:\\杂光图片\\测试图库\\1\\1-";
+	int num = 10;
+	//package_test(files_path,27,50);
+
+	//单颗镜头检测
+	string file_path = "E:\\杂光图片\\测试图库\\1\\1-14";
+	//single_test(file_path);
 
 	//图像相减
 	//image_subtract img_sub;
@@ -80,14 +93,14 @@ int main()
 	
 	//flag = ff.abonormalTestf(param.judgeFlag, ho_Image_AllV, param);
 	//flag = ff.fat_detect(flag,ho_Image_Median, param);
-	flag = ff.regionfOffLine(flag, ho_Image_Median, ho_Image_AllV, param);
+	//flag = ff.regionfOffLine(flag, ho_Image_Median, ho_Image_AllV, param);
 
 	//flare_detect_V4 fd;
 	//flag = fd.my_flare_detecte_V4(ho_Image, edgeDZ_distance,long_DZ_length, shortDZ_nums, fat_radius,inside_dust);
 	//cout << "检测出的状态:" <<endl;
 	
 
-	switch (flag)
+	/*switch (flag)
 	{
 		case 0:
 			cout<<"OK";
@@ -115,34 +128,40 @@ int main()
 			break;
 		default:
 			break;
-	}
-
-
-	//switch (flag)
-	//{
-	//case 0:
-	//	cout << "OK";
-	//	break;
-	//case 1:
-	//	cout << "NG";
-	//	break;
-	//case 2:
-	//	cout << "NG";
-	//	break;
-	//case 3:
-	//	cout << "NG";
-	//	break;
-	//case 4:
-	//	cout << "NG";
-	//case 5:
-	//	cout << "NG";
-	//default:
-	//	break;
-	//}
-
+	}*/
 
 	waitKey(60000);
 	destroyAllWindows();
     return 0;
 }
 
+void package_test(string filepath,int num1,int num2)
+{
+	evaluate my_evaluate;
+	ofstream OutFile("C:\\Users\\czwucx\\Desktop/一盒测试的结果.txt");
+	string path =filepath;
+	string jugement;
+	int index = num2;
+	for (int i = num1; i <= index; i++)
+	{
+		string path1 = path;
+		path1 = path1 + to_string(i);
+		string output_name = "C:\\Users\\czwucx\\Desktop/pic_filename.txt";
+		my_evaluate.folder_evaluate(path1, output_name);
+		string result = "C:\\Users\\czwucx\\Desktop/result.txt";
+		jugement = my_evaluate.my_evaluate_test(output_name, result);
+		OutFile << jugement << endl;
+	}
+	OutFile.close();
+}
+
+void single_test(string filepath)
+{
+	evaluate my_evaluate;
+	string jugement="无图";
+	string path1 = filepath;
+	string output_name = "C:\\Users\\czwucx\\Desktop/pic_filename.txt";
+	my_evaluate.folder_evaluate(path1, output_name);
+	string result = "C:\\Users\\czwucx\\Desktop/result.txt";
+	jugement = my_evaluate.my_evaluate_test(output_name, result);
+}

@@ -5,7 +5,7 @@ public:
 
 	//异常检测参数
 	float hv_AbnormalZoomSize = 0.5;
-	int hv_AbnormalMedianT = 5;
+	int hv_AbnormalMedianT = 11;
 	int hv_AbnormalMinT = 200;
 	int hv_AbnormalMaxT = 255;
 	int hv_AbnormalSelectLmin = 10000;
@@ -20,19 +20,22 @@ public:
 	int hv_fatTmin = 235;
 	int hv_fatTmax = 255;
 	int hv_fatOpenT = 25;
-	int hv_diameter = 318;
+	int hv_diameter = 110;
 
 	//道子内尘提取参数
 	//高斯
-	int gausizesize = 85;
-	int gausizesigma = 25;
-	int hv_bigDustFlagDTP = 85;// 53;
-	int hv_bigDustFlagClose = 27;//19;
+	int gausizesize = 55;//35
+	int gausizesigma1 = 25;
+	int gausizesigma2 = 21;
+	int hv_bigDustFlagDTP = 65;// 85;
+	int hv_bigDustFlagOpen = 27;
+	int hv_bigDustFlagClose = 19;//19;
 
-	int hv_bigDustMeanTmin = 71;//125
-	int hv_bigDustMeanTmax = 71;//125
+	int hv_bigDustMeanTmin = 125;//125
+	int hv_bigDustMeanTmax = 125;//125
+
 	int hv_bigDustSelectMax = 99999999;
-	int hv_bigDustSelectMin = 290;
+	int hv_bigDustSelectMin = 900;// 290;
 	int hv_eliminateDZT = 9;
 	int hv_eliminateDZCenterTmin = 254;
 	int hv_eliminateDZCenterTmax = 255;
@@ -66,7 +69,8 @@ public:
 	int hv_DZeliminateOpen = 3;
 	int hv_bigDustTmin = 0;
 	int hv_bigDustTmax = 255;
-	int hv_jugeBIGDustU = 8930;
+	//内尘
+	int hv_jugeBIGDustU = 3000;//8930;//530
 	int hv_bigDustW = 1;
 
 };

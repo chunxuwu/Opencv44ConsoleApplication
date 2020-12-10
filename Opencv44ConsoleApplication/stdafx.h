@@ -12,6 +12,8 @@
 #include <tchar.h>
 #include<iostream>
 #include<fstream>
+#include<io.h>
+#include<string>
 
 using namespace std;
 using namespace cv;
