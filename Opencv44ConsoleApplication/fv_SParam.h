@@ -20,7 +20,7 @@ public:
 	int hv_fatTmin = 235;
 	int hv_fatTmax = 255;
 	int hv_fatOpenT = 25;
-	int hv_diameter = 110;
+	int hv_diameter = 126;//根据4-30设置
 
 	//道子内尘提取参数
 	//高斯
@@ -29,7 +29,7 @@ public:
 	int gausizesigma2 = 21;
 	int hv_bigDustFlagDTP = 65;// 85;
 	int hv_bigDustFlagOpen = 27;
-	int hv_bigDustFlagClose = 19;//19;
+	int hv_bigDustFlagClose = 15;//19;
 
 	int hv_bigDustMeanTmin = 125;//125
 	int hv_bigDustMeanTmax = 125;//125
@@ -44,7 +44,7 @@ public:
 	int hv_eliminate_aimCenterOpen = 35;
 	int hv_bigDustDilate = 33;
 	int hv_bigDustOpen = 5;
-	int hv_eliminate_DZLenth = 100;
+	int hv_eliminate_DZLenth = 80;
 	int hv_DZWidth = 70;
 
 
@@ -56,21 +56,22 @@ public:
 	int hv_eliminateClose = 15;
 	int hv_eliminateSmin = 150;
 	int hv_eliminateSmax = 99999999;
+	int DZ_angle = 40;
 	int hv_eliminate_judgeCountShort = 75;//75
-	int hv_eliminate_judgeCountLong = 150;//135
+	int hv_eliminate_judgeCountLong = 220;//135
 	int hv_eliminate_judgeLong = 0;
 	int hv_eliminate_judgeShort = 2;
 	float hv_eliminate_L1W = 1;
 	float hv_eliminate_L2W = 1;
-	int hv_eliminate_jugeL1=77;
-	int hv_eliminate_jugeL2 = 8;
+	int hv_eliminate_jugeL1=220;
+	int hv_eliminate_jugeL2 = 40;
 
 	//内尘检测
 	int hv_DZeliminateOpen = 3;
 	int hv_bigDustTmin = 0;
 	int hv_bigDustTmax = 255;
 	//内尘
-	int hv_jugeBIGDustU = 3000;//8930;//530
+	int hv_jugeBIGDustU = 4000;// 3700;//8930;//530
 	int hv_bigDustW = 1;
 
 };

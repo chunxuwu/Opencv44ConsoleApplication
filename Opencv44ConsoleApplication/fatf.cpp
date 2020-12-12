@@ -269,6 +269,7 @@ int fatf::regionfOffLine(int jugement, Mat& imgM,Mat &imgV, fv_SParam & param)
 		int hv_eliminate_DZLenth = param.hv_eliminate_DZLenth;
 		int gausizesize = param.gausizesize;
 		int gausizesigma1 = param.gausizesigma1;
+		int DZ_angle = param.DZ_angle;
 		//剔除道子区域
 		Mat ho_Image_Median = imgM;
 		//Mat ho_bigDust_FlagScaled;
@@ -279,7 +280,7 @@ int fatf::regionfOffLine(int jugement, Mat& imgM,Mat &imgV, fv_SParam & param)
 		GaussianBlur(ho_Image_Median, ho_bigDust_FlagMean, Size(gausizesize, gausizesize), gausizesigma1, gausizesigma1, 4);
 		Mat ho_bigDust_FlagDyn;
 		adaptiveThreshold(ho_bigDust_FlagMean, ho_bigDust_FlagDyn, 255, 0, THRESH_BINARY, hv_bigDustFlagDTP, 0);
-		//circle(ho_bigDust_FlagDyn, Point(1510, 510), 50.5, 0, -1, 8);
+		circle(ho_bigDust_FlagDyn, Point(1506, 510), 60.5, 0, -1, 8);
 		Mat ho_bigDust_Close;
 		Mat se1 = getStructuringElement(MORPH_ELLIPSE, Size(hv_bigDustFlagOpen, hv_bigDustFlagOpen));
 		Mat se2 = getStructuringElement(MORPH_ELLIPSE, Size(hv_bigDustFlagClose, hv_bigDustFlagClose));
@@ -294,7 +295,7 @@ int fatf::regionfOffLine(int jugement, Mat& imgM,Mat &imgV, fv_SParam & param)
 		vector<vector<Point>> ho_bigDust_Select;
 		ho_bigDust_Select = selectShapeArea2(ho_bigDust_Close, draw_area, ho_bigDust_Connect, hv_bigDustSelectMin, hv_bigDustSelectMax);
 
-		//提取中心
+		//提取中心光源
 		Mat ho_eliminate_CenterMean;
 		Mat ho_Image_AllV = imgV;
 		blur(ho_Image_AllV, ho_eliminate_CenterMean, Size(hv_eliminateDZT, hv_eliminateDZT));
@@ -311,9 +312,12 @@ int fatf::regionfOffLine(int jugement, Mat& imgM,Mat &imgV, fv_SParam & param)
 		{
 			//求灯珠中心
 			Point centers;
-			Rect rect = boundingRect(ho_eliminate_aimCenterSelect[0]);
-			float hv_eliminate_CenterRow = rect.y;
-			float hv_eliminate_CenterColumn = rect.x;
+			Point2f center; float radius;
+			minEnclosingCircle(ho_eliminate_aimCenterSelect[0], center, radius);
+			//Rect rect = boundingRect(ho_eliminate_aimCenterSelect[0]);
+
+			float hv_eliminate_CenterRow = center.y;
+			float hv_eliminate_CenterColumn = center.x;
 			Mat eliminate_aimCenterSelect;
 			eliminate_aimCenterSelect = Mat::zeros(ho_Image_AllV.size(), CV_8UC1);
 			drawContours(eliminate_aimCenterSelect, ho_eliminate_aimCenterSelect, 0, 255, -1, 8);
@@ -361,7 +365,8 @@ int fatf::regionfOffLine(int jugement, Mat& imgM,Mat &imgV, fv_SParam & param)
 				float line_arctan;
 				double rate = 0;
 				//利用掩膜获取道子区域
-
+				double length1 = 0;
+				double length2 = 0;
 				ho_eliminate_RegionUnion = Mat::zeros(ho_bigDust_Intersect.size(), CV_8UC1);
 				for (int hv_i = 0; hv_i < ho_eliminateDZ_Connect.size(); hv_i++)
 				{
@@ -369,27 +374,46 @@ int fatf::regionfOffLine(int jugement, Mat& imgM,Mat &imgV, fv_SParam & param)
 					hv_eliminateDZ_Row = rrt.center.y;
 					hv_eliminateDZ_Column = rrt.center.x;
 					hv_eliminateDZ_Phi = rrt.angle;
-					hv_eliminateDZ_Length1 = rrt.size.height;
-					hv_eliminateDZ_Length2 = rrt.size.width;
+					
+					//cout << hv_eliminateDZ_Phi << endl;
+					length1 = rrt.size.height;
+					length2 = rrt.size.width;
+					hv_eliminateDZ_Length1 = min(length1, length2);
+					hv_eliminateDZ_Length2 = max(length1, length2);
 					//纵横比
-					rate = hv_eliminateDZ_Length2 / hv_eliminateDZ_Length1;
+					rate = length2 / length1;
 					//根据长度和宽度进行筛选，opencv中长非长，宽非宽，取俩者的最值即可
-					if ((min(hv_eliminateDZ_Length2, hv_eliminateDZ_Length1)<hv_DZWidth) &&
-						(max(hv_eliminateDZ_Length1, hv_eliminateDZ_Length2)>hv_eliminate_DZLenth))
+					if ((hv_eliminateDZ_Length1<hv_DZWidth) && (hv_eliminateDZ_Length2>hv_eliminate_DZLenth))
 					{
 						k = (hv_eliminate_CenterRow - hv_eliminateDZ_Row) / (hv_eliminate_CenterColumn - hv_eliminateDZ_Column);
 						//最小外接矩形的质心与灯珠中心连线的夹角
 						line_arctan = atan(k);
 						//角度计算
 						float angle1 = line_arctan*57.3;
-						if ((angle1 > 0 && rate < 0.66) || (angle1 <= 0 && rate > 1.5))
+						//检查垂直的道子
+						if ((hv_eliminateDZ_Phi == -90) && rate > 2)
 						{
-							if (angle1 > 0) angle1 = angle1 - 90;
-
-
+							rate = 1 / rate;
+							hv_eliminateDZ_Phi = 0;
+						}
+						//检查水平的道子
+						if (fabs(angle1)<20&&hv_eliminateDZ_Phi == -90) hv_eliminateDZ_Phi = 0;
+						if ( (angle1<0)&&(rate >2)||(angle1>0&&(rate<0.5)))
+						{
+							float angle_diff = 0;
+							if (angle1<0)
+							{
+								
+								angle_diff = angle1 - hv_eliminateDZ_Phi;
+							}
+							else 
+							{
+								angle_diff = 90-(angle1 -hv_eliminateDZ_Phi);
+							}
 							//cout << "道子中心与圆心的角度:" << angle1 << endl;
-							float angle_diff = fabs(angle1 - hv_eliminateDZ_Phi);
-							if (angle_diff < 23)
+							//cout << angle_diff << endl;
+							//cout << angle_diff << endl;
+							if (fabs(angle_diff) < DZ_angle)
 							{
 								drawContours(ho_eliminate_RegionUnion, ho_eliminateDZ_Connect, hv_i, 255, -1, 8);
 							}
