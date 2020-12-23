@@ -17,11 +17,11 @@ void evaluate::my_evaluate(string txt_path, string outname)
 	int shortDZ_nums = 3;
 	int fat_radius = 350;
 	int inside_dust = 1000;
-	flare_detect_V4 fd;
+//	flare_detect_V4 fd;
 	fatf ff;
 
 	fv_SParam param;
-	double t;
+	double t,t1,t2,t3;
 	t = (double)getTickCount();
 	ofstream OutFile(outname); //利用构造函数创建txt文本，并且打开该文本
 	//判断结果
@@ -37,7 +37,7 @@ void evaluate::my_evaluate(string txt_path, string outname)
 		Mat source_img = imread(img_name);
 		if (source_img.empty() == true)
 		{
-			cout << "erro: no image was selected" << endl;
+			cout << "no image was selected" << endl;
 			continue;
 		}
 		img_index++;
@@ -45,7 +45,7 @@ void evaluate::my_evaluate(string txt_path, string outname)
 		//杂光检测
 		jugement = "OK";
 		//int flag = fd.my_flare_detecte_V4(source_img, edgeDZ_distance, long_DZ_length, shortDZ_nums, fat_radius, inside_dust);
-
+		t1 = (double)getTickCount();
 		Mat ho_Image_Zoom;
 		resize(source_img, ho_Image_Zoom, Size(), param.hv_AbnormalZoomSize, param.hv_AbnormalZoomSize);
 
@@ -59,11 +59,15 @@ void evaluate::my_evaluate(string txt_path, string outname)
 		ho_Image_AllV = hsv_channels.at(2);
 		//中值滤波
 		Mat ho_Image_Median;
-		medianBlur(ho_Image_AllV, ho_Image_Median, 2 * (param.hv_AbnormalMedianT) + 1);
+		medianBlur(ho_Image_AllV, ho_Image_Median, param.hv_AbnormalMedianT);
 		int flag = 0;
 		//float radius;
 		//radius = ff.fat_detect_test(0, ho_Image_Median,param);
+
+		flag = ff.fat_detect_test(0, ho_Image_Median, param);
+		t2 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
 		flag = ff.regionfOffLine(flag, ho_Image_Median, ho_Image_AllV, param);
+		t3 = 1000 * ((double)getTickCount() - t2) / getTickFrequency();
 		if (flag != 0)
 		{
 			jugement = "NG";
@@ -71,6 +75,8 @@ void evaluate::my_evaluate(string txt_path, string outname)
 		}
 			
 		cout << "第" << img_index << "张图片" << endl;
+		cout << t2 << endl;
+		cout << t3 << endl;
 		//if (flag = 0)
 		{
 			//OutFile << radius << endl;
@@ -106,23 +112,24 @@ string evaluate::my_evaluate_test(string txt_path, string outname)
 	int shortDZ_nums = 3;
 	int fat_radius = 350;
 	int inside_dust = 1000;
-	flare_detect_V4 fd;
+	//flare_detect_V4 fd;
 	fatf ff;
-
 	fv_SParam param;
-	double t;
+	double t,t1,t2,t3,t4,t5,t7,t8;
 	t = (double)getTickCount();
 	ofstream OutFile(outname); //利用构造函数创建txt文本，并且打开该文本
 	//判断结果
-	string jugement = "没有图片";
+	string jugement;// = "没有图片";
+	jugement = "OK";
+	int flags = 0;
 	OutFile << "每一张的检测结果:" << endl;
 	while (!file.eof())
 	{
-
 		char img_name[2000];
 		file.getline(img_name, 2000);
 		char img_file[2000];
 		//cout << img_name << endl;
+		t1 = (double)getTickCount();
 		Mat source_img = imread(img_name);
 		if (source_img.empty() == true)
 		{
@@ -132,9 +139,9 @@ string evaluate::my_evaluate_test(string txt_path, string outname)
 		img_index++;
 		//detect.my_inside_dust_detect(source_img);
 		//杂光检测
-		jugement = "OK";
+		//jugement = "OK";
 		//int flag = fd.my_flare_detecte_V4(source_img, edgeDZ_distance, long_DZ_length, shortDZ_nums, fat_radius, inside_dust);
-
+		t2 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
 		Mat ho_Image_Zoom;
 		resize(source_img, ho_Image_Zoom, Size(), param.hv_AbnormalZoomSize, param.hv_AbnormalZoomSize);
 
@@ -148,34 +155,49 @@ string evaluate::my_evaluate_test(string txt_path, string outname)
 		ho_Image_AllV = hsv_channels.at(2);
 		//中值滤波
 		Mat ho_Image_Median;
-		medianBlur(ho_Image_AllV, ho_Image_Median, 2 * (param.hv_AbnormalMedianT) + 1);
+		medianBlur(ho_Image_AllV, ho_Image_Median, param.hv_AbnormalMedianT);
+		t3 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
 		int flag = 0;
 		//float radius;
 		//radius = ff.fat_detect_test(0, ho_Image_Median,param);
-		flag = ff.fat_detect(0, ho_Image_Median, param);
-		flag = ff.regionfOffLine(flag, ho_Image_Median, ho_Image_AllV, param);
+		t7 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
+		flag = ff.abonormalTestf(0, ho_Image_AllV, param);
+		t8 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
+		flag = ff.fat_detect(flag, ho_Image_Median, param);
+		t4 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
+		flag = ff.regionfOffLine_test(flag, ho_Image_Median, ho_Image_AllV, param);
+		//t4 = 1000 * ((double)getTickCount() - t3) / getTickFrequency();
+		t5 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
 		if (flag != 0)
 		{
 			jugement = "NG";
-			break;
+			flags++;
+			//break;
 		}
-
 		cout << "第" << img_index << "张图片处理完成." << endl;
+		//cout << t2 << "\t" << t3 << "\t" << t4 << "\t" << t5 << endl;
+		cout << "图片读取耗时：" << t2<< endl;
+		cout << "图片预处理时间" << t3-t2 << endl;
+		cout << "异常检测耗时：" << t8 - t7<<endl;
+		cout << "光源发胖检测耗时：" << t4 - t3 << endl;
+		cout << "道子内尘耗时：" << t5 - t4 << endl;
+		cout << "处理总耗时：" << t5 << endl;
 		//if (flag = 0)
 		{
 			//OutFile << radius << endl;
-
 			OutFile << "第" << img_index << "张图片的检测结果：" << flag << endl;
 			//cout << img_file << "*********" << flag << endl;
 		}
 	}
+	//if (flags != 0) jugement = 1;
 	t = 1000 * ((double)getTickCount() - t) / getTickFrequency();
 	t = t / img_index;
 	cout << "处理一张图片的平均时间：" << t << "ms" << endl;
 	cout << "判断结果：" << jugement << endl;
 	OutFile << "处理一张图片的平均时间:" << t << endl;
-	OutFile << "判断结果：" << jugement << endl;
+	//OutFile << "判断结果：" << jugement << endl;
 	OutFile.close();
+	
 	return jugement;
 }
 

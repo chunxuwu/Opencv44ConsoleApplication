@@ -122,7 +122,7 @@ int flare_detecte_V3::DZ_detect3(Mat img, Point pt, int long_DZ, int edge_DZ,int
 		k = (pt.y - center.y) / (pt.x - center.x);
 		float line_arctan = atan(k);
 		//½Ç¶È¼ÆËã
-		float angle1 = line_arctan*57.3;
+		double angle1 = line_arctan*57.3;
 		if ((angle1 > 0 && rate < 0.66) || (angle1 <= 0 && rate > 1.5))
 		{
 			if (angle1 > 0) angle1 = angle1 - 90;

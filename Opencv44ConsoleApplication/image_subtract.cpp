@@ -11,7 +11,7 @@ image_subtract::~image_subtract()
 {
 }
 
-void image_subtract::my_image_subtract(Mat image1, Mat image2)
+void image_subtract::my_image_subtract(Mat &image1, Mat &image2)
 {
 
 		if ((image1.rows != image2.rows) || (image1.cols != image2.cols))
@@ -80,4 +80,21 @@ void image_subtract::my_image_subtract(Mat image1, Mat image2)
 		}
 		imshow("Ð§¹ûÍ¼", image1);
 	}
+
+void image_subtract::min_rect_test(Mat &img)
+{
+	Mat background = Mat::zeros(img.size(), CV_8UC1);
+	Rect rect(100, 100, 1300, 100);
+	rectangle(background, rect, 255, -1);
+	vector<vector<Point>>contours;
+	findContours(background, contours, RETR_LIST, CHAIN_APPROX_SIMPLE);
+	RotatedRect rrt = minAreaRect(contours[0]);
+	float hv_eliminateDZ_Row = rrt.center.y;
+	float hv_eliminateDZ_Column = rrt.center.x;
+	float hv_eliminateDZ_Phi = rrt.angle;
+	float rate = rrt.size.width/rrt.size.height;
+	Point2f pts[4];
+	rrt.points(pts);
+	cout << rate << endl;
+}
 

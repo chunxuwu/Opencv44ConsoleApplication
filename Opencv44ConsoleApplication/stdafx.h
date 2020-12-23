@@ -26,11 +26,12 @@ using namespace cv;
 //#include"fat_light_detect.h"
 //#include "flare_detecte.h"
 //#include"flare_detecte_V3.h"
-#include"flare_detect_V4.h"
+//#include"flare_detect_V4.h"
 #include "fv_SParam.h"
 #include "fatf.h"
+#include <omp.h>
 
-extern int OK_nums;
-extern int NG_nums;
+//extern int OK_nums;
+//extern int NG_nums;
 
 // TODO:  在此处引用程序需要的其他头文件

@@ -122,7 +122,7 @@ int inside_dust_detect::DZ_detect(Mat img, Point pt)
 		k = (pt.y - center.y) / (pt.x - center.x);
 		float line_arctan = atan(k);
 		//½Ç¶È¼ÆËã
-		float angle1 = line_arctan*57.3;
+		double angle1 = line_arctan*57.3;
 		if (angle1 > 0) angle1 = angle1 - 90;
 		//cout << angle1<<endl;
 		float angle_diff = fabs(angle1 - angle);

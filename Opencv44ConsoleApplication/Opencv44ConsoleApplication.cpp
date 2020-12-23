@@ -14,7 +14,7 @@ int main()
 	//9为发胖,6、12为道子,7为ok；10为内尘//C:\\Users\\czwucx\\Desktop\\single_light\\mn_pic\\7.bmp
 	//E:\\杂光图片\\2020430NG\\37/16.bmp;;;C:\\Users\\czwucx\\Desktop\\single_light\\杂光图片\\2020427\\OK\\20
 	//Mat img_ng = imread("C:\\Users\\czwucx\\Desktop\\single_light\\mn_pic\\16.bmp");
-	Mat ho_Image = imread("E:\\杂光图片\\测试图库\\5\\5-17\\13.bmp");
+	Mat ho_Image = imread("E:\\flare_pic\\test_pic\\1\\1-33\\3.bmp");
 	//Mat ho_Image = imread("C:\\Users\\czwucx\\Desktop\\single_light\\杂光图片\\自动机台过检采图1203\\1-15/2.bmp");
 	if (ho_Image.empty() == true)
 	{
@@ -45,24 +45,26 @@ int main()
 	evaluate my_evaluate;
 	//string output_name = "fat_test_7.9ok.txt";
 	//my_evaluate.my_evaluate(path, output_name);
-	
+	int flag = 0;
 	//整盒测试
-	string files_path = "E:\\杂光图片\\测试图库\\5\\5-";	
+	string files_path = "E:\\杂光图片\\测试图库\\1\\1-";	
 	//package_test(files_path,1,50);
 
 	//单颗镜头检测
-	string file_path = "E:\\杂光图片\\测试图库\\5\\5-49";
+	string file_path = "E:\\flare_pic\\test_pic\\1\\1-17";
 	single_test(file_path);
 
 	//单张测试
 	fatf ff;
-	int flag = 0;
+	
 	//flag = ff.abonormalTestf(param.judgeFlag, ho_Image_AllV, param);
 	//flag = ff.fat_detect(flag,ho_Image_Median, param);
-	//flag = ff.regionfOffLine(flag, ho_Image_Median, ho_Image_AllV, param);
-	show_result(flag);
+	//flag = ff.regionfOffLine_test(flag, ho_Image_Median, ho_Image_AllV, param);
+	//show_result(flag);
 
-	waitKey(60000);
+	//image_subtract minrect;
+	//minrect.min_rect_test(ho_Image_AllV);
+	waitKey(600000);
 	destroyAllWindows();
     return 0;
 }

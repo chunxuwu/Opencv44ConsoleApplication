@@ -134,7 +134,7 @@ int flare_detecte::DZ_detect2(Mat img, Point pt)
 		k = (pt.y - center.y) / (pt.x - center.x);
 		float line_arctan = atan(k);
 		//角度计算
-		float angle1 = line_arctan*57.3;
+		double angle1 = line_arctan*57.3;
 		if (angle1 > 0) angle1 = angle1 - 90;
 		cout << "道子中心与圆心的角度:"<<angle1<<endl;
 		float angle_diff = fabs(angle1 - angle);
@@ -185,8 +185,8 @@ int flare_detecte::color_detect(Mat img)
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
 	findContours(mask, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-	int index = -1;
-	int max = 0;
+	size_t index = -1;
+	double max = 0;
 	for (size_t t = 0; t < contours.size(); t++) 
 	{
 		double area = contourArea(contours[t]);
