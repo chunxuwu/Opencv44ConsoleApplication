@@ -98,3 +98,34 @@ void image_subtract::min_rect_test(Mat &img)
 	cout << rate << endl;
 }
 
+void image_subtract::blur_test(Mat & img)
+{
+	Mat background = Mat::zeros(img.size(), CV_32FC1);
+	Rect rect(100, 100, 700,700);
+	rectangle(background, rect, 10, -1);
+	Mat scale_img,scale_img1;
+	Mat convert1, convert2, convert3;
+	multiply(background, 0.65, scale_img);
+	scale_img.convertTo(convert1, CV_8UC1);
+	threshold(convert1, convert2, 3, 255, 0);
+	multiply(background, 0.45, scale_img1);
+
+	Mat background2 = Mat::zeros(Size(5,5), CV_8UC1);
+	Mat background3 = Mat::zeros(Size(5, 5), CV_32FC1);
+	int c = 30;
+	for (int i = 0; i < 5; i++) {
+		for (int j = 0; j < 5; j++) {
+			background2.at<uchar>(i, j) = c;
+			background3.at<float>(i, j) = c;
+			c++;
+		}
+	}
+	background2.at<uchar>(1, 1) = 5;
+	background3.at<float>(1, 1) = 5;
+	Mat blur23,blur33,blur34;
+	blur(background2, blur23, Size(3, 3));
+	blur(background3, blur33, Size(3, 3));
+	blur33.at<float>(1, 1) = 32.50;
+	blur33.convertTo(blur34, CV_8UC1);
+}
+

@@ -10,17 +10,20 @@ void show_result(int flag);
 int main()
 {
 	fv_SParam param;
+	double t, t1, t2, t3, t4, t5, t7, t8;
+	//int medianblur_size = param.
 	//Mat img_ok = imread("C:\\Users\\czwucx\\Desktop\\single_light\\mn_pic\\7.bmp");
 	//9为发胖,6、12为道子,7为ok；10为内尘//C:\\Users\\czwucx\\Desktop\\single_light\\mn_pic\\7.bmp
 	//E:\\杂光图片\\2020430NG\\37/16.bmp;;;C:\\Users\\czwucx\\Desktop\\single_light\\杂光图片\\2020427\\OK\\20
 	//Mat img_ng = imread("C:\\Users\\czwucx\\Desktop\\single_light\\mn_pic\\16.bmp");
-	Mat ho_Image = imread("E:\\flare_pic\\test_pic\\1\\1-33\\3.bmp");
-	//Mat ho_Image = imread("C:\\Users\\czwucx\\Desktop\\single_light\\杂光图片\\自动机台过检采图1203\\1-15/2.bmp");
+	//Mat ho_Image = imread("E:\\flare_pic\\test_pic\\1\\1-31\\0.bmp");
+	Mat ho_Image = imread("C:\\Users\\czwucx\\Desktop\\0108NG/1.bmp");
 	if (ho_Image.empty() == true)
 	{
 		cout << "no image was selected" << endl;
 		return -1;
 	}
+	t1 = (double)getTickCount();
 	Mat ho_Image_Zoom;
 	//resize(img_ok, img1_size, Size(), 0.5, 0.5);
 	resize(ho_Image, ho_Image_Zoom, Size(), param.hv_AbnormalZoomSize, param.hv_AbnormalZoomSize);
@@ -33,10 +36,32 @@ int main()
 	//V通道
 	Mat ho_Image_AllV;
 	ho_Image_AllV = hsv_channels.at(2);
-	//中值滤波
+
+	//blur(scale_img)
+	t2 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
 	Mat ho_Image_Median;
 	medianBlur(ho_Image_AllV, ho_Image_Median, param.hv_AbnormalMedianT);
+	t3 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
+	cout << "中值滤波耗时" << t3 - t2 << endl;
+	//高斯滤波
+	Mat gaussi_pic;
+	GaussianBlur(ho_Image_Median, gaussi_pic, Size(13,13),15,15,4);
 
+	Mat scale_img;
+	multiply(ho_Image_Median, 0.63, scale_img);
+	//halcon动态阈值分割
+	Mat mean_img;
+	blur(scale_img, mean_img, Size(105, 105));
+	Mat pro_dynthreshold;
+	subtract(scale_img, mean_img, pro_dynthreshold);
+	Mat dyn_threshold;
+	threshold(pro_dynthreshold, dyn_threshold, 1, 255, 0);
+
+	Mat dst;
+	adaptiveThreshold(scale_img, dst, 255, 0, 0, 105, -1);
+
+	Mat dst1;
+	adaptiveThreshold(gaussi_pic, dst1, 255, 0, 0, 105, -1);
 	//批量测试
 	//string path = "C:\\Users\\czwucx\\Desktop\\single_light\\杂光图片\\2020427\\OK\\filename3.txt";
 	//string path = "E:\\杂光图片\\2020430NG\\filename3.txt";
@@ -51,19 +76,20 @@ int main()
 	//package_test(files_path,1,50);
 
 	//单颗镜头检测
-	string file_path = "E:\\flare_pic\\test_pic\\1\\1-17";
-	single_test(file_path);
+	string file_path = "E:\\flare_pic\\test_pic\\1\\1-6";
+	//single_test(file_path);
 
 	//单张测试
 	fatf ff;
 	
 	//flag = ff.abonormalTestf(param.judgeFlag, ho_Image_AllV, param);
 	//flag = ff.fat_detect(flag,ho_Image_Median, param);
-	//flag = ff.regionfOffLine_test(flag, ho_Image_Median, ho_Image_AllV, param);
-	//show_result(flag);
+	flag = ff.regionfOffLine_test(flag, ho_Image_Median, ho_Image_AllV, param);
+	show_result(flag);
 
-	//image_subtract minrect;
-	//minrect.min_rect_test(ho_Image_AllV);
+	//image_subtract TTT;
+	//TTT.blur_test(ho_Image_AllV);
+
 	waitKey(600000);
 	destroyAllWindows();
     return 0;

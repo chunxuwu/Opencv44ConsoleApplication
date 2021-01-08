@@ -69,7 +69,14 @@ vector<vector<Point>>  selectShapeArea3(vector<vector<Point>> contours, int minv
 Mat closing_circle2(Mat & src,int radius ) 
 {
 	Mat closing_circle;
-	Mat se1 = getStructuringElement(MORPH_ELLIPSE, Size(radius, radius));
+	Mat se1 = getStructuringElement(2, Size(radius, radius));
+	morphologyEx(src, closing_circle, MORPH_CLOSE, se1);
+	return closing_circle;
+}
+Mat closing_rectangle(Mat & src, int radius)
+{
+	Mat closing_circle;
+	Mat se1 = getStructuringElement(0, Size(radius, radius));
 	morphologyEx(src, closing_circle, MORPH_CLOSE, se1);
 	return closing_circle;
 }
@@ -283,7 +290,7 @@ int fatf::regionfOffLine(int jugement, Mat& imgM,Mat &imgV, fv_SParam & param)
 	if (jugement == 0)
 	{
 		int hv_jugement = jugement;
-		int hv_bigDustFlagDTP = param.hv_bigDustFlagDTP;
+		int hv_bigDustFlagDTP = param.mean_size;
 		int hv_bigDustMeanTmax = param.hv_bigDustMeanTmax;
 		int hv_bigDustMeanTmin = param.hv_bigDustMeanTmin;
 		int hv_bigDustFlagClose = param.hv_bigDustFlagClose;
@@ -299,7 +306,7 @@ int fatf::regionfOffLine(int jugement, Mat& imgM,Mat &imgV, fv_SParam & param)
 		int hv_bigDustDilate = param.hv_bigDustDilate;
 		int hv_bigDustOpen = param.hv_bigDustOpen;
 		int hv_DZWidth = param.hv_DZWidth;
-		int hv_eliminate_DZLenth = param.hv_eliminate_DZLenth;
+		int hv_DZLenth = param.hv_DZLenth;
 		int gausizesize = param.gausizesize;
 		int gausizesigma1 = param.gausizesigma1;
 		int DZ_angle = param.DZ_angle;
@@ -308,12 +315,12 @@ int fatf::regionfOffLine(int jugement, Mat& imgM,Mat &imgV, fv_SParam & param)
 		Mat ho_Image_Median = imgM;
 		//Mat ho_bigDust_FlagScaled;
 		//equalizeHist(ho_Image_median, ho_bigDust_FlagScaled);
-		Mat ho_bigDust_FlagMean;
+		//Mat ho_bigDust_FlagMean;
 		//blur(ho_Image_median, ho_bigDust_FlagMean, Size(hv_bigDustMeanTmin, hv_bigDustMeanTmax));
 		//medianBlur(ho_Image_Median, ho_bigDust_FlagMean, hv_bigDustMeanTmin);
-		GaussianBlur(ho_Image_Median, ho_bigDust_FlagMean, Size(gausizesize, gausizesize), gausizesigma1, gausizesigma1, 4);
+		//GaussianBlur(ho_Image_Median, ho_bigDust_FlagMean, Size(gausizesize, gausizesize), gausizesigma1, gausizesigma1, 4);
 		Mat ho_bigDust_FlagDyn;
-		adaptiveThreshold(ho_bigDust_FlagMean, ho_bigDust_FlagDyn, 255, 0, THRESH_BINARY, hv_bigDustFlagDTP,adaptive_C);
+		adaptiveThreshold(ho_Image_Median, ho_bigDust_FlagDyn, 255, 1, THRESH_BINARY, hv_bigDustFlagDTP,adaptive_C);
 		//circle(ho_bigDust_FlagDyn, Point(1506, 510), 60.5, 0, -1, 8);
 		Mat ho_bigDust_Close;
 		Mat se1 = getStructuringElement(MORPH_ELLIPSE, Size(hv_bigDustFlagOpen, hv_bigDustFlagOpen));
@@ -421,7 +428,7 @@ int fatf::regionfOffLine(int jugement, Mat& imgM,Mat &imgV, fv_SParam & param)
 					float eliminateDZ_Phi;
 					eliminateDZ_Phi = hv_eliminateDZ_Phi;
 					//根据长度和宽度进行筛选，opencv中长非长，宽非宽，取俩者的最值即可
-					if ((hv_eliminateDZ_Length1<hv_DZWidth) && (hv_eliminateDZ_Length2>hv_eliminate_DZLenth))
+					if ((hv_eliminateDZ_Length1<hv_DZWidth) && (hv_eliminateDZ_Length2>hv_DZLenth))
 					{
 						k = (hv_eliminate_CenterRow - hv_eliminateDZ_Row) / (hv_eliminate_CenterColumn - hv_eliminateDZ_Column);
 						//最小外接矩形的质心与灯珠中心连线的夹角
@@ -540,7 +547,7 @@ int fatf::regionfOffLine_test(int jugement, Mat & img, Mat & imgV, fv_SParam & p
 	if (jugement == 0)
 	{
 		int hv_jugement = jugement;
-		int hv_bigDustFlagDTP = param.hv_bigDustFlagDTP;
+		int mean_size = param.mean_size;
 		int hv_bigDustMeanTmax = param.hv_bigDustMeanTmax;
 		int hv_bigDustMeanTmin = param.hv_bigDustMeanTmin;
 		int hv_bigDustFlagClose = param.hv_bigDustFlagClose;
@@ -556,36 +563,54 @@ int fatf::regionfOffLine_test(int jugement, Mat & img, Mat & imgV, fv_SParam & p
 		int hv_bigDustDilate = param.hv_bigDustDilate;
 		int hv_bigDustOpen = param.hv_bigDustOpen;
 		int hv_DZWidth = param.hv_DZWidth;
-		int hv_eliminate_DZLenth = param.hv_eliminate_DZLenth;
+		int hv_DZLenth = param.hv_DZLenth;
 		int gausizesize = param.gausizesize;
 		int gausizesigma1 = param.gausizesigma1;
+		int bigDustFlagDTP = param.bigDustFlagDTP;
+		//float hv_bigDustFlagDTP = param.hv_bigDustFlagDTP;
 		int DZ_angle = param.DZ_angle;
 		float adaptive_C = param.adaptive_C;
+		float hv_bigDustFlagScale = param.hv_bigDustFlagScale;
+		float bigDustFlagScale = param.bigDustFlagScale;
 		//剔除道子区域
 		double t, t1, t2, t3, t4, t5, t6, t7;
 		t = (double)getTickCount();
 		Mat ho_Image_Median = img;
+		Mat scale_img;
+		multiply(ho_Image_Median, bigDustFlagScale, scale_img);
 		//Mat ho_bigDust_FlagScaled;
-		//equalizeHist(ho_Image_median, ho_bigDust_FlagScaled);
-		Mat ho_bigDust_FlagMean;
+		//multiply(ho_Image_Median, 0.63,ho_bigDust_FlagScaled);
+		//Mat ho_bigDust_FlagMean;
 		//blur(ho_Image_median, ho_bigDust_FlagMean, Size(hv_bigDustMeanTmin, hv_bigDustMeanTmax));
 		//medianBlur(ho_Image_Median, ho_bigDust_FlagMean, hv_bigDustMeanTmin);
-		t6 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
-		GaussianBlur(ho_Image_Median, ho_bigDust_FlagMean, Size(gausizesize, gausizesize), gausizesigma1, gausizesigma1, 4);
-		t7 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
-		cout << "高斯滤波耗时：" << t7 - t6 << endl;
+
+		//Mat ho_bigDust_FlagScaled;
+		//multiply(ho_Image_Median, hv_bigDustFlagScale, ho_bigDust_FlagScaled);
+
+		//halcon动态阈值分割
+		//Mat mean_img;
+		//blur(ho_bigDust_FlagScaled, mean_img, Size(mean_size, mean_size));
+		//Mat pro_dynthreshold;
+		//subtract(ho_bigDust_FlagScaled, mean_img, pro_dynthreshold);
+		//Mat ho_bigDust_FlagDyn;
+		//threshold(pro_dynthreshold, ho_bigDust_FlagDyn, bigDustFlagDTP, 255, 0);
+		//t6 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
+		//GaussianBlur(img, ho_bigDust_FlagMean, Size(gausizesize, gausizesize), gausizesigma1, gausizesigma1, 4);
+		//t7 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
+		//cout << "高斯滤波耗时：" << t7 - t6 << endl;
 		Mat ho_bigDust_FlagDyn;
 		t6 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
-		adaptiveThreshold(ho_bigDust_FlagMean, ho_bigDust_FlagDyn, 255, 0, THRESH_BINARY, hv_bigDustFlagDTP, adaptive_C);
+		adaptiveThreshold(scale_img, ho_bigDust_FlagDyn, 255, 0, THRESH_BINARY, mean_size, adaptive_C);
 		t7 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
 		cout << "动态阈值分割" << t7 - t6 << endl;
 		circle(ho_bigDust_FlagDyn, Point(1506, 510), 60.5, 0, -1, 8);
+
 		//Mat ho_bigDust_close;
-		//Mat se1 = getStructuringElement(MORPH_ELLIPSE, Size(hv_bigDustFlagOpen, hv_bigDustFlagOpen));
+		Mat se1 = getStructuringElement(0, Size(hv_bigDustFlagClose, hv_bigDustFlagClose));
 		Mat se2 = getStructuringElement(MORPH_ELLIPSE, Size(hv_bigDustFlagClose, hv_bigDustFlagClose));
 		Mat ho_bigDust_open;
 		t6 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
-		morphologyEx(ho_bigDust_FlagDyn, ho_bigDust_open, MORPH_CLOSE, se2);
+		morphologyEx(ho_bigDust_FlagDyn, ho_bigDust_open, MORPH_CLOSE, se1);
 		t7 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
 		cout << "形态学闭操作耗时：" << t7 - t6 << endl;
 		//morphologyEx(ho_bigDust_open, ho_bigDust_close, MORPH_OPEN, se2);
@@ -607,7 +632,7 @@ int fatf::regionfOffLine_test(int jugement, Mat & img, Mat & imgV, fv_SParam & p
 		//blur(ho_Image_AllV, ho_eliminate_CenterMean, Size(hv_eliminateDZT, hv_eliminateDZT));
 		t6 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
 		Mat ho_eliminate_CenterRegion;
-		threshold(ho_bigDust_FlagMean, ho_eliminate_CenterRegion, hv_eliminateDZCenterTmin, hv_eliminateDZCenterTmax, 0);
+		threshold(img, ho_eliminate_CenterRegion, hv_eliminateDZCenterTmin, hv_eliminateDZCenterTmax, 0);
 		vector<vector<Point>> ho_eliminate_CenterConnect;
 		Mat draw_big_dust1;
 		ho_eliminate_CenterConnect = connection2(ho_eliminate_CenterRegion, draw_big_dust1);
@@ -622,26 +647,44 @@ int fatf::regionfOffLine_test(int jugement, Mat & img, Mat & imgV, fv_SParam & p
 			//求灯珠中心
 			//Point centers;
 			Point2f center; float radius;
-			minEnclosingCircle(ho_eliminate_aimCenterSelect[0], center, radius);
+			//minEnclosingCircle(ho_eliminate_aimCenterSelect[0], center, radius);
 			//Rect rect = boundingRect(ho_eliminate_aimCenterSelect[0]);
 			//灯珠掩膜
+			t6 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
+			RotatedRect fe = fitEllipse(ho_eliminate_aimCenterSelect[0]);
+			//RotatedRect fee = minAreaRect(ho_eliminate_aimCenterSelect[0]);
+			Point2f pts[4],pts1[4];
+			//fee.points(pts);
+			fe.points(pts1);
+			for (int i = 0; i < 4; i++) {
+				//line(draw_area1, pts[i % 4], pts[(i + 1) % 4], Scalar(255, 0, 0), 2, 8, 0);
+				line(draw_area1, pts1[i % 4], pts1[(i + 1) % 4], Scalar(0, 0, 255), 2, 8, 0);
+			}
+			center = fe.center;
+			circle(draw_area1, center, 2, Scalar(0,255, 0), 2, 8, 0);
+			ellipse(draw_area1, fe, Scalar(255, 0, 0), 2, 8);
+			//float height = 
+			float width = fe.size.width;
 			Mat center_mask=Mat::zeros(ho_eliminate_CenterRegion.size(),CV_8UC1);
-			circle(center_mask, center, radius + hv_bigDustDilate, 255, -1);
-
+			circle(center_mask, center, width/2 + hv_bigDustDilate, 255, -1);
+			circle(draw_area1, center, width / 2 + hv_bigDustDilate, 255, -1);
+			t7 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
+			cout << "画圆法耗时：" << t7 - t6 << endl;
 			float hv_eliminate_CenterRow = center.y;
 			float hv_eliminate_CenterColumn = center.x;
-			//Mat eliminate_aimCenterSelect;
-			//eliminate_aimCenterSelect = Mat::zeros(imgV.size(), CV_8UC1);
-			//drawContours(eliminate_aimCenterSelect, ho_eliminate_aimCenterSelect, 0, 255, -1, 8);
+			/*t6 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
+			Mat eliminate_aimCenterSelect;
+			eliminate_aimCenterSelect = Mat::zeros(imgV.size(), CV_8UC1);
+			drawContours(eliminate_aimCenterSelect, ho_eliminate_aimCenterSelect, 0, 255, -1, 8);
 
-			//Mat se_aimcenter = getStructuringElement(MORPH_ELLIPSE, Size(hv_eliminate_aimCenterOpen, hv_eliminate_aimCenterOpen));
-			//morphologyEx(eliminate_aimCenterSelect, eliminate_aimCenterSelect, MORPH_OPEN, se_aimcenter);
-			//t6 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
-			//Mat se_aimcenter1 = getStructuringElement(MORPH_ELLIPSE, Size(2 * hv_bigDustDilate, 2 * hv_bigDustDilate));
-			//Mat ho_bigDust_Dilation;
-			//dilate(eliminate_aimCenterSelect, ho_bigDust_Dilation, se_aimcenter1);
-			//t7 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
-			//cout << "灯珠膨胀耗时：" << t7 - t6 << endl;
+			Mat se_aimcenter = getStructuringElement(MORPH_ELLIPSE, Size(hv_eliminate_aimCenterOpen, hv_eliminate_aimCenterOpen));
+			morphologyEx(eliminate_aimCenterSelect, eliminate_aimCenterSelect, MORPH_OPEN, se_aimcenter);
+			
+			Mat se_aimcenter1 = getStructuringElement(MORPH_ELLIPSE, Size(2 * hv_bigDustDilate, 2 * hv_bigDustDilate));
+			Mat ho_bigDust_Dilation;
+			dilate(eliminate_aimCenterSelect, ho_bigDust_Dilation, se_aimcenter1);
+			t7 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
+			cout << "灯珠膨胀耗时：" << t7 - t6 << endl;*/
 			
 			Mat bigDust_Select;
 			bigDust_Select = Mat::zeros(imgV.size(), CV_8UC1);
@@ -653,6 +696,8 @@ int fatf::regionfOffLine_test(int jugement, Mat & img, Mat & imgV, fv_SParam & p
 			//去除灯珠的图片
 			Mat ho_bigDust_Dif;
 			addWeighted(bigDust_Select, 1, center_mask, -1, 0, ho_bigDust_Dif);
+			//addWeighted(bigDust_Select, 1, ho_bigDust_Dilation, -1, 0, ho_bigDust_Dif);
+			
 			//bitwise_or(eliminate_aimCenterSelect, bigDust_Select, ho_bigDust_Dif);
 			//Mat se_aimcenter3 = getStructuringElement(MORPH_ELLIPSE, Size(hv_bigDustOpen, hv_bigDustOpen));
 			//Mat ho_bigDust_CicleOpen;
@@ -702,7 +747,7 @@ int fatf::regionfOffLine_test(int jugement, Mat & img, Mat & imgV, fv_SParam & p
 					float eliminateDZ_Phi;
 					eliminateDZ_Phi = hv_eliminateDZ_Phi;
 					//根据长度和宽度进行筛选，opencv中长非长，宽非宽，取俩者的最值即可
-					if ((hv_eliminateDZ_Length1 < hv_DZWidth) && (hv_eliminateDZ_Length2 > hv_eliminate_DZLenth))
+					if ((hv_eliminateDZ_Length1 < hv_DZWidth) && (hv_eliminateDZ_Length2 > hv_DZLenth))
 					{
 						k = (hv_eliminate_CenterRow - hv_eliminateDZ_Row) / (hv_eliminate_CenterColumn - hv_eliminateDZ_Column);
 						//最小外接矩形的质心与灯珠中心连线的夹角
@@ -795,7 +840,7 @@ int fatf::regionfOffLine_test(int jugement, Mat & img, Mat & imgV, fv_SParam & p
 				minMaxLoc(ho_eliminate_Reduce, &hv_eliminate_Min, &hv_eliminate_Max, &minLoc, &maxLoc, ho_eliminate_RegionUnion);
 				t1 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
 				//*******************道子判断***************************
-				hv_jugement = DZJudgeF(hv_jugement, ho_eliminate_Reduce, hv_eliminate_Min, param);
+				hv_jugement = DZJudgeF_text(hv_jugement,img ,ho_eliminate_Reduce, hv_eliminate_Min, param);
 				t2 = 1000 * ((double)getTickCount() - t) / getTickFrequency();
 				cout << "道子区域模板获取耗时：" << t1 - t4 << endl;
 				cout << "道子杂光判定耗时：" << t2 - t1 << endl;
@@ -811,7 +856,7 @@ int fatf::my_regionfOffLine_test(int jugement, Mat & img, Mat & imgV, fv_SParam 
 	if (jugement == 0)
 	{
 		int hv_jugement = jugement;
-		int hv_bigDustFlagDTP = param.hv_bigDustFlagDTP;
+		int hv_bigDustFlagDTP = param.mean_size;
 		int hv_bigDustMeanTmax = param.hv_bigDustMeanTmax;
 		int hv_bigDustMeanTmin = param.hv_bigDustMeanTmin;
 		int hv_bigDustFlagClose = param.hv_bigDustFlagClose;
@@ -827,7 +872,7 @@ int fatf::my_regionfOffLine_test(int jugement, Mat & img, Mat & imgV, fv_SParam 
 		int hv_bigDustDilate = param.hv_bigDustDilate;
 		int hv_bigDustOpen = param.hv_bigDustOpen;
 		int hv_DZWidth = param.hv_DZWidth;
-		int hv_eliminate_DZLenth = param.hv_eliminate_DZLenth;
+		int hv_DZLenth = param.hv_DZLenth;
 		int gausizesize = param.gausizesize;
 		int gausizesigma1 = param.gausizesigma1;
 		int DZ_angle = param.DZ_angle;
@@ -991,7 +1036,7 @@ int fatf::my_regionfOffLine_test(int jugement, Mat & img, Mat & imgV, fv_SParam 
 					float eliminateDZ_Phi;
 					eliminateDZ_Phi = hv_eliminateDZ_Phi;
 					//根据长度和宽度进行筛选，opencv中长非长，宽非宽，取俩者的最值即可
-					if ((hv_eliminateDZ_Length1<hv_DZWidth) && (hv_eliminateDZ_Length2>hv_eliminate_DZLenth))
+					if ((hv_eliminateDZ_Length1<hv_DZWidth) && (hv_eliminateDZ_Length2>hv_DZLenth))
 					{
 						k = (hv_eliminate_CenterRow - hv_eliminateDZ_Row) / (hv_eliminate_CenterColumn - hv_eliminateDZ_Column);
 						//最小外接矩形的质心与灯珠中心连线的夹角
@@ -1101,13 +1146,16 @@ int fatf::DZJudgeF(int jugement, Mat & img, double eliminate_Min, fv_SParam & pa
 		Mat ho_eliminate_FRegion;
 		Mat ho_eliminate_Reduce = img;
 		threshold(ho_eliminate_Reduce, ho_eliminate_FRegion, hv_eliminateFTmin, hv_eliminateTmax, 0);
+
 		//Mat ho_eliminate_RegionClose;
 		//ho_eliminate_RegionClose = closing_circle2(ho_eliminate_FRegion, hv_eliminateClose);
+
 		vector<vector<Point>> ho_eliminate_FConnect;
 		ho_eliminate_FConnect = connection3(ho_eliminate_FRegion);
 		vector<vector<Point>> ho_eliminate_SelectedRe;
 		ho_eliminate_SelectedRe = selectShapeArea3(ho_eliminate_FConnect, hv_eliminateSmin, hv_eliminateSmax);
 		RotatedRect rrt;
+		Point2f pts[4];
 		float weight = 0;
 		float height = 0;
 		float hv_eliminate_FLength1 = 0;
@@ -1118,6 +1166,14 @@ int fatf::DZJudgeF(int jugement, Mat & img, double eliminate_Min, fv_SParam & pa
 		for (int i = 0; i < ho_eliminate_SelectedRe.size(); i++)
 		{
 			rrt = minAreaRect(ho_eliminate_SelectedRe[i]);
+			rrt.points(pts);
+			//画矩形
+			for (int j = 0; j < 4; j++) 
+			{
+				line(ho_eliminate_Reduce, pts[j % 4], pts[(j + 1) % 4], 255, 2, 8, 0);
+				//string text = "第"+
+			}
+			putText(ho_eliminate_Reduce, to_string(i), pts[0], FONT_HERSHEY_PLAIN, 6.0,  255, 2, LINE_AA);
 			weight = rrt.size.width;
 			height = rrt.size.height;
 			hv_eliminate_FLength1 = max(weight, height);
@@ -1131,17 +1187,112 @@ int fatf::DZJudgeF(int jugement, Mat & img, double eliminate_Min, fv_SParam & pa
 				write_date(hv_eliminate_FLength1);
 				write_date(hv_eliminate_FLength2);
 				hv_eliminate_CountShort += 1;
+
+
+				//长道子数
+				if (hv_eliminate_FLength1 > hv_eliminate_judgeCountLong)
+					hv_eliminate_CountLong += 1;
+				//长道子或亮道子（宽）
+				hv_eliminate_FLength1 = hv_eliminate_L1W * (hv_eliminate_FLength1 / (2 * hv_eliminate_jugeL1));
+				hv_eliminate_FLength2 = hv_eliminate_L2W*(hv_eliminate_FLength2 / (2 * hv_eliminate_jugeL2));
+				if ((hv_eliminate_FLength1 >= 0.5) || (hv_eliminate_FLength2 >= 0.5))
+					//道子
+					hv_jugement = 3;
 			}
-				
-			//长道子数
-			if (hv_eliminate_FLength1>hv_eliminate_judgeCountLong)
-				hv_eliminate_CountLong += 1;
-			//长道子或亮道子（宽）
-			hv_eliminate_FLength1 = hv_eliminate_L1W * (hv_eliminate_FLength1 / (2 * hv_eliminate_jugeL1));
-			hv_eliminate_FLength2 = hv_eliminate_L2W*(hv_eliminate_FLength2 / (2 * hv_eliminate_jugeL2));
-			if ((hv_eliminate_FLength1 >= 0.5) || (hv_eliminate_FLength2 >= 0.5))
-				//道子
-				hv_jugement = 3;
+		}
+		int hv_eliminateOUT_CountShort = hv_eliminate_CountShort;
+		int hv_eliminateOUT_CountLong = hv_eliminate_CountLong;
+		if (hv_eliminate_CountShort>hv_eliminate_judgeShort)
+			//多道子
+			hv_jugement = 5;
+		if (hv_eliminateOUT_CountLong > hv_eliminate_judgeLong)
+			//长道子
+			hv_jugement = 4;
+		next_line();
+		//if (hv_jugement != 0) next_line();
+	}
+	return hv_jugement;
+}
+
+int fatf::DZJudgeF_text(int jugement, Mat & src, Mat & reduce_img, double eliminate_Min, fv_SParam & param)
+{
+	int hv_jugement = jugement;
+	double hv_eliminate_Min = eliminate_Min;
+	int hv_eliminateTmin = param.hv_eliminateTmin;
+	int hv_eliminateTmax = param.hv_eliminateTmax;
+	int hv_eliminateClose = param.hv_eliminateClose;
+	int hv_eliminateSmax = param.hv_eliminateSmax;
+	int hv_eliminateSmin = param.hv_eliminateSmin;
+	int hv_eliminate_judgeCountShort = param.hv_eliminate_judgeCountShort;
+	int hv_eliminate_judgeCountLong = param.hv_eliminate_judgeCountLong;
+	int hv_eliminate_judgeShort = param.hv_eliminate_judgeShort;
+	int hv_eliminate_judgeLong = param.hv_eliminate_judgeLong;
+	float hv_eliminate_L1W = param.hv_eliminate_L1W;
+	float hv_eliminate_L2W = param.hv_eliminate_L2W;
+	int hv_eliminate_jugeL1 = param.hv_eliminate_jugeL1;
+	int hv_eliminate_jugeL2 = param.hv_eliminate_jugeL2;
+	if (hv_jugement == 0)
+	{
+		double hv_eliminateFTmin = hv_eliminate_Min + hv_eliminateTmin;
+		if (hv_eliminateTmin>(hv_eliminateTmax - hv_eliminate_Min))
+			hv_eliminateFTmin = hv_eliminateTmax - hv_eliminateTmin;
+		Mat ho_eliminate_FRegion;
+		Mat ho_eliminate_Reduce = reduce_img;
+		threshold(ho_eliminate_Reduce, ho_eliminate_FRegion, hv_eliminateFTmin, hv_eliminateTmax, 0);
+
+		Mat ho_eliminate_RegionClose;
+		//ho_eliminate_RegionClose = closing_circle2(ho_eliminate_FRegion, hv_eliminateClose);
+		ho_eliminate_RegionClose = closing_rectangle(ho_eliminate_FRegion, hv_eliminateClose);
+
+		vector<vector<Point>> ho_eliminate_FConnect;
+		ho_eliminate_FConnect = connection3(ho_eliminate_RegionClose);
+		vector<vector<Point>> ho_eliminate_SelectedRe;
+		ho_eliminate_SelectedRe = selectShapeArea3(ho_eliminate_FConnect, hv_eliminateSmin, hv_eliminateSmax);
+		RotatedRect rrt;
+		Point2f pts[4];
+		float weight = 0;
+		float height = 0;
+		float hv_eliminate_FLength1 = 0;
+		float hv_eliminate_FLength2 = 0;
+		int hv_eliminate_CountShort = 0;
+		int hv_eliminate_CountLong = 0;
+		//#pragma omp parallel for num_threads(4)
+		for (int i = ho_eliminate_SelectedRe.size()-1; i >= 0; i--)
+		{
+			rrt = minAreaRect(ho_eliminate_SelectedRe[i]);
+			rrt.points(pts);
+			
+			weight = rrt.size.width;
+			height = rrt.size.height;
+			hv_eliminate_FLength1 = max(weight, height);
+
+			hv_eliminate_FLength2 = min(weight, height);
+
+			//道子数
+			if (hv_eliminate_FLength1 > hv_eliminate_judgeCountShort)
+			{
+				//画矩形
+				for (int j = 0; j < 4; j++)
+				{
+					line(src, pts[j % 4], pts[(j + 1) % 4], 255, 2, 8, 0);
+					//string text = "第"+
+				}
+				putText(src, to_string(ho_eliminate_SelectedRe.size() - i), pts[0], FONT_HERSHEY_PLAIN, 6.0, 255, 2, LINE_AA);
+				//记录数据
+				write_date(hv_eliminate_FLength1/2);
+				write_date(hv_eliminate_FLength2/2);
+				//中长道子
+				hv_eliminate_CountShort += 1;
+				//长道子数
+				if (hv_eliminate_FLength1 > hv_eliminate_judgeCountLong)
+					hv_eliminate_CountLong += 1;
+				//长道子或亮道子（宽）
+				hv_eliminate_FLength1 = hv_eliminate_L1W * (hv_eliminate_FLength1 / (2 * hv_eliminate_jugeL1));
+				hv_eliminate_FLength2 = hv_eliminate_L2W*(hv_eliminate_FLength2 / (2 * hv_eliminate_jugeL2));
+				if ((hv_eliminate_FLength1 >= 0.5) || (hv_eliminate_FLength2 >= 0.5))
+					//道子
+					hv_jugement = 3;
+			}
 		}
 		int hv_eliminateOUT_CountShort = hv_eliminate_CountShort;
 		int hv_eliminateOUT_CountLong = hv_eliminate_CountLong;

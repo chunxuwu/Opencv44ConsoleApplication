@@ -20,7 +20,7 @@ using namespace cv;
 
 #include"evaluate.h";
 //#include"inside_dust_detect.h"
-//#include "image_subtract.h"
+#include "image_subtract.h"
 //#include"subtract_center_area.h"
 //#include"little_dust_detect.h"
 //#include"fat_light_detect.h"

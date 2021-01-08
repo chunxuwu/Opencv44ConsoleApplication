@@ -107,14 +107,15 @@ string evaluate::my_evaluate_test(string txt_path, string outname)
 	ifstream file(txt_path);
 	int img_index = 0;
 	//inside_dust_detect detect;
-	int edgeDZ_distance = 600;
+	/*int edgeDZ_distance = 600;
 	int long_DZ_length = 100;
 	int shortDZ_nums = 3;
 	int fat_radius = 350;
-	int inside_dust = 1000;
+	int inside_dust = 1000;*/
 	//flare_detect_V4 fd;
 	fatf ff;
 	fv_SParam param;
+	int mid_size = param.hv_AbnormalMedianT;
 	double t,t1,t2,t3,t4,t5,t7,t8;
 	t = (double)getTickCount();
 	ofstream OutFile(outname); //利用构造函数创建txt文本，并且打开该文本
@@ -123,6 +124,7 @@ string evaluate::my_evaluate_test(string txt_path, string outname)
 	jugement = "OK";
 	int flags = 0;
 	OutFile << "每一张的检测结果:" << endl;
+//#	pragma omp parallel num_threads(4)
 	while (!file.eof())
 	{
 		char img_name[2000];
@@ -144,7 +146,9 @@ string evaluate::my_evaluate_test(string txt_path, string outname)
 		t2 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
 		Mat ho_Image_Zoom;
 		resize(source_img, ho_Image_Zoom, Size(), param.hv_AbnormalZoomSize, param.hv_AbnormalZoomSize);
-
+		t3 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
+		cout << "resize图片耗时" << t3 - t2 << endl;
+		//t2 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
 		Mat hsv_img, gray;
 		cvtColor(ho_Image_Zoom, hsv_img, COLOR_BGR2HSV);
 		//hsv通道分离
@@ -153,10 +157,14 @@ string evaluate::my_evaluate_test(string txt_path, string outname)
 		//V通道
 		Mat ho_Image_AllV;
 		ho_Image_AllV = hsv_channels.at(2);
+		t4 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
+		cout << "V通道提取耗时" << t4 - t3 << endl;
 		//中值滤波
 		Mat ho_Image_Median;
-		medianBlur(ho_Image_AllV, ho_Image_Median, param.hv_AbnormalMedianT);
+		GaussianBlur(ho_Image_AllV, ho_Image_Median, Size(mid_size, mid_size), 15, 15, 4);
+		//medianBlur(ho_Image_AllV, ho_Image_Median, mid_size);
 		t3 = 1000 * ((double)getTickCount() - t1) / getTickFrequency();
+		cout << "高斯滤波耗时" << t3 - t4 << endl;
 		int flag = 0;
 		//float radius;
 		//radius = ff.fat_detect_test(0, ho_Image_Median,param);
@@ -179,7 +187,7 @@ string evaluate::my_evaluate_test(string txt_path, string outname)
 		cout << "图片读取耗时：" << t2<< endl;
 		cout << "图片预处理时间" << t3-t2 << endl;
 		cout << "异常检测耗时：" << t8 - t7<<endl;
-		cout << "光源发胖检测耗时：" << t4 - t3 << endl;
+		cout << "光源发胖检测耗时：" << t4 - t8 << endl;
 		cout << "道子内尘耗时：" << t5 - t4 << endl;
 		cout << "处理总耗时：" << t5 << endl;
 		//if (flag = 0)

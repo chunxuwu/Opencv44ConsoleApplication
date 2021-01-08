@@ -6,7 +6,7 @@ public:
 	//异常检测参数
 	float hv_AbnormalZoomSize = 0.5;
 
-	int hv_AbnormalMedianT = 3;//5
+	int hv_AbnormalMedianT = 11;//长度9，原半径5，
 	int hv_AbnormalMinT = 200;
 	int hv_AbnormalMaxT = 255;
 	int hv_AbnormalSelectLmin = 10000;
@@ -18,7 +18,7 @@ public:
 	int hv_AbnormalMINArea = 15000;
 
 	//光源发胖参数
-	int hv_fatTmin = 230;// 235;
+	int hv_fatTmin = 235;// 235;
 	int hv_fatTmax = 255;
 	int hv_fatOpenT = 25;
 	int hv_diameter = 136;//根据4-30设置(126)//1-11
@@ -29,47 +29,55 @@ public:
 	int gausizesigma1 = 15;//25
 	int gausizesigma2 = 10;//21
 	//blocksize-mean
-	int hv_bigDustFlagDTP = 105;// 105//125;
-	double adaptive_C = -1.9;
+	int mean_size = 105;// 105//125;
+	float bigDustFlagScale = 0.63;
+	float hv_bigDustFlagScale = 0.63;
+	int bigDustFlagDTP = 2;
 
-	int hv_bigDustFlagOpen = 22;// 15;
-	int hv_bigDustFlagClose = 19;//19;
+	double adaptive_C = -1;
+
+	int hv_bigDustFlagOpen = 22;// 22;
+	
+	int hv_bigDustFlagClose = 36;//现36 原半径19的圆，
 
 	int hv_bigDustMeanTmin = 125;
 	int hv_bigDustMeanTmax = 125;
 	//内尘杂光面积选择
 	int hv_bigDustSelectMax = 99999999;
 	int hv_bigDustSelectMin = 230;// 290;
+
 	int hv_eliminateDZT = 9;
 	int hv_eliminateDZCenterTmin = 254;
 	int hv_eliminateDZCenterTmax = 255;
 
-	int hv_eliminateDZSlectTmin = 350;//330
+	int hv_eliminateDZSlectTmin = 50;//50
 	int hv_eliminateDZSlectTmax = 99999999;
 	int hv_eliminate_aimCenterOpen = 35;
-	int hv_bigDustDilate = 30;
+	//画中心光源
+	int hv_bigDustDilate = 35;
 	int hv_bigDustOpen = 23;
+
 	//道子特征选取最低参数
-	int hv_eliminate_DZLenth = 80;
+	int hv_DZLenth = 42;
 	int hv_DZWidth = 80;
 
 	int judgeFlag = 0;
 
 	//道子判断
-	int hv_eliminateTmin=9;
+	int hv_eliminateTmin=0;
 	//int eliminateTmin[]={35,3,19,65,85};
 	int hv_eliminateTmax = 255;
-	int hv_eliminateClose = 3;//15
+	int hv_eliminateClose = 9;//圆半径为5，等效方形8.8
 	//对道子区域进行面积筛选
-	int hv_eliminateSmin = 190;
+	int hv_eliminateSmin = 150;
 	int hv_eliminateSmax = 99999999;
 
 	int DZ_angle = 20;
 	//短道子
-	int hv_eliminate_judgeCountShort = 69;//75
+	int hv_eliminate_judgeCountShort = 52;//75
 	//int hv_eliminate_judgeCountShort={69,179,99,100,100}
 	//长道子入选
-	int hv_eliminate_judgeCountLong = 159;//280
+	int hv_eliminate_judgeCountLong = 89;//280
 	//int hv_eliminate_judgeCountLong={89,219,159,200,200}
 
 	//长道子数量控制
@@ -79,9 +87,9 @@ public:
 	float hv_eliminate_L1W = 1;
 	float hv_eliminate_L2W = 1;
 	//长道子长
-	int hv_eliminate_jugeL1=280;
+	int hv_eliminate_jugeL1=250;
 	//亮道子宽
-	int hv_eliminate_jugeL2 = 40;
+	int hv_eliminate_jugeL2 = 47;
 
 	//内尘检测
 	int hv_DZeliminateOpen = 3;
